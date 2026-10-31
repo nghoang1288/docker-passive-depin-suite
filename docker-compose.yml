@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  honeygain:
+    image: honeygain/honeygain:latest
+    container_name: depin-honeygain
+    restart: unless-stopped
+    command: -email ${HONEYGAIN_EMAIL} -pass ${HONEYGAIN_PASSWORD} -device ${DEVICE_NAME:-depin-node} -tou-accept
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+
+  earnapp:
+    image: fazalfarhan01/earnapp:latest
+    container_name: depin-earnapp
+    restart: unless-stopped
+    environment:
+      - EARNAPP_UUID=${EARNAPP_UUID:-}
+    volumes:
+      - earnapp-data:/etc/earnapp
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+
+  pawns:
+    image: iproyal/pawns-cli:latest
+    container_name: depin-pawns
+    restart: unless-stopped
+    command: -email=${PAWNS_EMAIL:-} -password=${PAWNS_PASSWORD:-} -device-name=${DEVICE_NAME:-depin-node} -accept-tos
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: 3
+
+volumes:
+  earnapp-data:
